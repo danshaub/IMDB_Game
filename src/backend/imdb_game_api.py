@@ -20,17 +20,8 @@ class imdb_game_api:
     #   (ID, Title, ReleaseYear)
     # Results returned in JSON format
     def get_search(self, search):
-        result_sw = [[(123,'Sarah and Son',2000), 
-                      (123,'Sarò tua',2000)], 
-                     [(123,'Sarah Jessica Parker','TestMovie',2000,'Actor'), 
-                      (123,'Sarah Michelle Gellar','TestMovie',2000,'Actor')
-            ]]
-        # result_sw = self.db_ops.call_proc('starts_with', (search,))
-        result_ct = [[(121,'El húsar de la muerte', 2000),
-                      (121,'Piccolo Cesare', 2000)], 
-                     [(121,'Mia Sara', 'TestMovie', 2000, 'Actor'), 
-                      (121,'Susan Sarandon', 'TestMovie', 2000, 'Actor')]]
-        # result_ct = self.db_ops.call_proc('contained', (search,))
+        result_sw = self.db_ops.call_proc('starts_with', (search,))
+        result_ct = self.db_ops.call_proc('contained', (search,))
 
         results_mv = [helper.create_mv_search_dict(i) for i in (result_sw[0] + result_ct[0])]
         results_pr = [helper.create_pr_search_dict(i) for i in (result_sw[1] + result_ct[1])]
@@ -42,7 +33,13 @@ class imdb_game_api:
     # given a string, autocomplete actors and movies
     def get_autocomplete(self, search):
         result = self.db_ops.call_proc('starts_with', (search,))
-        return result
+
+        results_mv = [helper.create_mv_search_dict(i) for i in result[0]]
+        results_pr = [helper.create_pr_search_dict(i) for i in result[1]]
+
+        result_json = helper.create_json_list([results_pr, results_mv], ["People", "Movies"])
+
+        return result_json
 
     # given a StageName, return all details of all Movie People
     # whose name matches StageName in JSON Format (sorted by popularity)

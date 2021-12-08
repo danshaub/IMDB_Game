@@ -20,8 +20,9 @@ with open('test_queries/pr.json', 'w') as outfile:
 #     outfile.write(person_query)
 
 
-
-# print(api.get_autocomplete('Sar'))
+autocomplete = api.get_autocomplete('Sar')
+with open('test_queries/autocomplete.json', 'w') as outfile:
+    outfile.write(autocomplete)
 # print("\n\n ############## \n\n")
 # search = api.get_search('Sar')
 # with open('test_queries/search.json', 'w') as outfile:
