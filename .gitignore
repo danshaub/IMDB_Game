@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Database Keys
+key.txt
+
+# Test Queries
+test_queries
