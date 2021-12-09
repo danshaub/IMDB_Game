@@ -44,11 +44,14 @@ class db_operations():
             results.append(result.fetchall())
         return results
 
-    # def insert_game(self, game_tuple):
-    #     query = '''
-    #     INSERT INTO Game (Player, Starter, Ender, GamePath)
-    #     VALUES :
-    #     '''
+    def insert_game(self, game_tuple):
+        query = '''
+        INSERT INTO Game (Player, Starter, Ender, GamePath)
+        VALUES :
+        '''
+
+        self.cursor.execute(query, game_tuple)
+
 
     def destructor(self):
         self.connection.close()

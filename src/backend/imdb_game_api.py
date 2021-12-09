@@ -21,7 +21,7 @@ class imdb_game_api:
     # Results returned in JSON format
     def get_search(self, search):
         result_sw = self.db_ops.call_proc('starts_with', (search,))
-        result_ct = self.db_ops.call_proc('contained', (search,))
+        result_ct = self.db_ops.call_proc('contains_String', (search,))
 
         results_mv = [helper.create_mv_search_dict(i) for i in (result_sw[0] + result_ct[0])]
         results_pr = [helper.create_pr_search_dict(i) for i in (result_sw[1] + result_ct[1])]
@@ -95,8 +95,9 @@ class imdb_game_api:
         result_json = helper.create_json_list([result_dicts], ["People"])
         return result_json
 
+
     # given a player, return list of games they played
-    
+
     # retrun a start and end actor
     # given an actor, return all movies they acted in
     # given a movie, return all actors who played in it
@@ -112,6 +113,11 @@ class imdb_game_api:
     # edit actor details
     # edit player details
         # add games to list of games
+
+    def insert_game(self, PlayerID, GamePath=[int]):
+        StarterPersonID = GamePath[0]
+        EnderPersonID = GamePath[-1]
+        self.db_ops.insert_game((PlayerID, StarterPersonID, EnderPersonID, GamePath))
 
     # add actors to movies
 
