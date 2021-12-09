@@ -44,8 +44,7 @@ class imdb_game_api:
     # given a StageName, return all details of all Movie People
     # whose name matches StageName in JSON Format (sorted by popularity)
     def get_person_by_name(self, name):
-        # result = self.db_ops.call_proc('get_person_by_name', (name,))
-        result = self.db_ops.call_proc('get_actor', (name,))
+        result = self.db_ops.call_proc('get_person_by_name', (name,))
         result_dicts = [helper.create_person_dict(i) for i in result[0]]
         result_json = helper.create_json_list([result_dicts], ["People"])
         return result_json
@@ -71,8 +70,33 @@ class imdb_game_api:
         result_json = helper.create_movie_json(result[0][0])
         return result_json
 
+    # given
+    def get_movies_by_person(self, id):
+        result = self.db_ops.call_proc('get_movies_by_person', (id,))
+        result_dicts = [helper.create_movie_dict(i) for i in result[0]]
+        result_json = helper.create_json_list([result_dicts], ["Movies"])
+        return result_json
+
+    def get_movies_by_actor(self, id):
+        result = self.db_ops.call_proc('get_movies_by_actor', (id,))
+        result_dicts = [helper.create_movie_dict(i) for i in result[0]]
+        result_json = helper.create_json_list([result_dicts], ["Movies"])
+        return result_json
+
+    def get_actors_by_movie(self, id):
+        result = self.db_ops.call_proc('get_actors_by_movie', (id,))
+        result_dicts = [helper.create_person_dict(i) for i in result[0]]
+        result_json = helper.create_json_list([result_dicts], ["People"])
+        return result_json
+
+    def get_people_by_movie(self, id):
+        result = self.db_ops.call_proc('get_people_by_movie', (id,))
+        result_dicts = [helper.create_person_dict(i) for i in result[0]]
+        result_json = helper.create_json_list([result_dicts], ["People"])
+        return result_json
+
     # given a player, return list of games they played
-    # given a player, return stats from games they played
+    
     # retrun a start and end actor
     # given an actor, return all movies they acted in
     # given a movie, return all actors who played in it

@@ -1,8 +1,8 @@
 import json
 
 class helper():
-    __pr_schema = ["ID","StageName","Height","Birthday","BirthPlace", "Popularity"]
-    __mv_schema = ["ID", "Title", "ReleaseYear", "Genre", "Duration", "Country", "Rating"]
+    __pr_schema = ["ID","StageName","Height","Birthday","BirthPlace", "Popularity", "Category", "Role"]
+    __mv_schema = ["ID", "Title", "ReleaseYear", "Genre", "Duration", "Country", "Rating", "Votes", "Category", "Role"]
     __ct_schema = ["ID", "Movie", "Importance", "MoviePeople", "Category", "CharacterPlayed"]
     __pr_search_schema = ["ID", "ScreenName", "MovieTitle", "ReleaseYear", "RoleInMovie"]
     __mv_search_schema = ["ID", "Title", "ReleaseYear"]
@@ -19,6 +19,10 @@ class helper():
     # Given data, type of data, and a schema, return a dictionary of info
     @staticmethod
     def __create_dict_from_schema(data=(), data_type=str, schema=[str]) -> dict:
+        print(data_type)
+        print(data)
+        print(schema)
+        print()
         return_dict = {"Type": data_type}
         for indx, value in enumerate(data):
             return_dict[schema[indx]] = value
