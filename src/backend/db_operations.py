@@ -1,5 +1,5 @@
 import mysql.connector
-
+import pickle
 
 class db_operations():
     # initialize connection and cursor
@@ -46,11 +46,21 @@ class db_operations():
 
     def insert_game(self, game_tuple):
         query = '''
-        INSERT INTO Game (Player, Starter, Ender, GamePath)
-        VALUES :
+        INSERT INTO Game (Player, Starter, Ender, OptimalScore, Score, GamePath)
+        VALUES (%s,%s,%s,%s,%s,%s);
         '''
-
+        # dictionary = {'pID':game_tuple[0], 'sID':game_tuple[1], 'eID':game_tuple[2]}
         self.cursor.execute(query, game_tuple)
+
+    def get_game(self, id):
+        query = '''
+        SELECT * FROM Game'''
+
+    def commit_transation(self):
+        self.connection.commit()
+
+    def rollback_transaction(self):
+        self.connection.rollback()
 
 
     def destructor(self):

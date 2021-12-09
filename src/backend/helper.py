@@ -1,9 +1,11 @@
 import json
+import pickle
 
 class helper():
     __pr_schema = ["ID","StageName","Height","Birthday","BirthPlace", "Popularity", "Category", "Role"]
     __mv_schema = ["ID", "Title", "ReleaseYear", "Genre", "Duration", "Country", "Rating", "Votes", "Category", "Role"]
     __ct_schema = ["ID", "Movie", "Importance", "MoviePeople", "Category", "CharacterPlayed"]
+    __gm_schema = ["ID", "Player", "Starter", "Ender", "OptimalScore", "Score", "GamePath"]
     __pr_search_schema = ["ID", "ScreenName", "MovieTitle", "ReleaseYear", "RoleInMovie"]
     __mv_search_schema = ["ID", "Title", "ReleaseYear"]
 
@@ -81,3 +83,18 @@ class helper():
     @staticmethod
     def create_mv_search_json(mv=()) -> str:
         return helper.__create_json_from_schema(mv, "Search Result Movie", helper.__mv_search_schema)
+
+    @staticmethod
+    def unpickle_game_data(gm=()) -> tuple:
+        lst = list(gm[0:-1]) + [pickle.loads(gm[-1])]
+        return tuple(lst)
+    
+    @staticmethod
+    def create_game_dict(gm=()) -> dict:
+        gm = helper.unpickle_game_data(gm)
+        return helper.__create_dict_from_schema(gm, "Game", helper.__gm_schema)
+
+    @staticmethod
+    def create_game_json(gm=()) -> str:
+        gm = helper.unpickle_game_data(gm)
+        return helper.__create_json_from_schema(gm, "Game", helper.__gm_schema)

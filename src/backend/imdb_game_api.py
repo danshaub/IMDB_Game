@@ -3,6 +3,7 @@
 import json
 from db_operations import db_operations
 from helper import helper
+import pickle
 
 class imdb_game_api:
     def __init__(self, key_path) -> None:
@@ -95,14 +96,27 @@ class imdb_game_api:
         result_json = helper.create_json_list([result_dicts], ["People"])
         return result_json
 
+    def get_game_by_id(self, id):
+        result = self.db_ops.call_proc('get_game_by_id', (id,))
+        result_json = helper.create_game_json(result[0][0])
+        return result_json
 
     # given a player, return list of games they played
-
-    # retrun a start and end actor
-    # given an actor, return all movies they acted in
-    # given a movie, return all actors who played in it
+    def get_games_by_player(self, playerID):
+        result = self.db_ops.call_proc('get_games', (playerID,))
+        result_dicts = [helper.create_game_dict(i) for i in result[0]]
+        result_json = helper.create_json_list([result_dicts], ["Games"])
+        return result_json
 
     ### DML ###
+
+    # Commits current transaction
+    def commit_action(self):
+        self.db_ops.commit_transation()
+
+    # Rollsback current transaction
+    def rollback_action(self):
+        self.db_ops.rollback_transaction()
 
     # add player
     # add actor
@@ -117,7 +131,14 @@ class imdb_game_api:
     def insert_game(self, PlayerID, GamePath=[int]):
         StarterPersonID = GamePath[0]
         EnderPersonID = GamePath[-1]
-        self.db_ops.insert_game((PlayerID, StarterPersonID, EnderPersonID, GamePath))
+        OptimalScore = 0 # TODO: implement finding optimal score
+        Score = ((len(GamePath) - 1) / 2) - OptimalScore
+        self.db_ops.insert_game((PlayerID,
+                                 StarterPersonID,
+                                 EnderPersonID,
+                                 OptimalScore,
+                                 Score,
+                                 pickle.dumps(GamePath)))
 
     # add actors to movies
 
