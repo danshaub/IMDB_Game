@@ -57,24 +57,28 @@ api = imdb_game_api("key.txt")
 # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 # api.get_person_by_id(5403) # Jason Schwartzman
 
-game_path = [114, # Steve Buscemi
-             198781, # Monsters Inc.
-             422, # John Goodman
-             190590, # O Brother, Where Art Thou
-             123, # George Clooney
-             432283, # Fantastic Mr. Fox
-             5403] # Jason Schwartzman
+# game_path = [114, # Steve Buscemi
+#              198781, # Monsters Inc.
+#              422, # John Goodman
+#              190590, # O Brother, Where Art Thou
+#              123, # George Clooney
+#              432283, # Fantastic Mr. Fox
+#              5403] # Jason Schwartzman
 
-api.insert_game(2, game_path)
+# api.insert_game(2, game_path)
 
-api.rollback_action()
+# api.rollback_action()
 
 # game = api.get_game_by_id(10)
 # with open('test_queries/game.json', 'w') as outfile:
 #     outfile.write(game)
 
-games = api.get_games_by_player(2)
-with open('test_queries/games_player2.json', 'w') as outfile:
-    outfile.write(games)
+# games = api.get_games_by_player(2)
+# with open('test_queries/games_player2.json', 'w') as outfile:
+#     outfile.write(games)
 
+endpoints = api.get_game_endpoints(0,0,0)
+endpoint_actors = [api.get_person_by_id(id) for id in endpoints]
+for actor in endpoint_actors:
+    print(actor)
 api.destructor()

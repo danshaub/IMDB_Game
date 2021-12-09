@@ -4,6 +4,7 @@ import json
 from db_operations import db_operations
 from helper import helper
 import pickle
+import random
 
 class imdb_game_api:
     def __init__(self, key_path) -> None:
@@ -13,6 +14,8 @@ class imdb_game_api:
         self.db_ops.destructor()
 
     ### DQL ###
+
+    ## Browsing ##
 
     # given a string, search people and movies
     # returns list of people sorted by popularity with the schema
@@ -71,12 +74,28 @@ class imdb_game_api:
         result_json = helper.create_movie_json(result[0][0])
         return result_json
 
-    # given
+    
+
     def get_movies_by_person(self, id):
         result = self.db_ops.call_proc('get_movies_by_person', (id,))
         result_dicts = [helper.create_movie_dict(i) for i in result[0]]
         result_json = helper.create_json_list([result_dicts], ["Movies"])
         return result_json
+
+    def get_people_by_movie(self, id):
+        result = self.db_ops.call_proc('get_people_by_movie', (id,))
+        result_dicts = [helper.create_person_dict(i) for i in result[0]]
+        result_json = helper.create_json_list([result_dicts], ["People"])
+        return result_json
+
+    ## Game Functions ##
+
+    def get_game_endpoints(self, gameSeed=int, numSteps=int, minStartPopularity=int) -> tuple:
+        temp_games = [(114,5403), # S. Buscemi -> J. Schwartzman
+                      (102, 6819854), # K. Bacon -> Justice Smith 
+                      (375, 185819)]  # R. Downey Jr. -> D. Craig
+
+        return temp_games[random.randint(0,2)]
 
     def get_movies_by_actor(self, id):
         result = self.db_ops.call_proc('get_movies_by_actor', (id,))
@@ -90,16 +109,7 @@ class imdb_game_api:
         result_json = helper.create_json_list([result_dicts], ["People"])
         return result_json
 
-    def get_people_by_movie(self, id):
-        result = self.db_ops.call_proc('get_people_by_movie', (id,))
-        result_dicts = [helper.create_person_dict(i) for i in result[0]]
-        result_json = helper.create_json_list([result_dicts], ["People"])
-        return result_json
-
-    def get_game_by_id(self, id):
-        result = self.db_ops.call_proc('get_game_by_id', (id,))
-        result_json = helper.create_game_json(result[0][0])
-        return result_json
+    ## Player Stats ##
 
     # given a player, return list of games they played
     def get_games_by_player(self, playerID):
@@ -107,6 +117,12 @@ class imdb_game_api:
         result_dicts = [helper.create_game_dict(i) for i in result[0]]
         result_json = helper.create_json_list([result_dicts], ["Games"])
         return result_json
+
+    def get_game_by_id(self, id):
+        result = self.db_ops.call_proc('get_game_by_id', (id,))
+        result_json = helper.create_game_json(result[0][0])
+        return result_json
+
 
     ### DML ###
 
