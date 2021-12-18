@@ -36,6 +36,9 @@ api = imdb_game_api("key.txt")
 #     outfile.write(movies)
 
 # people = api.get_actors_by_movie(432283)
+# people = json.loads(people)['People']
+# people = [person['ID'] for person in people]
+# print(people)
 # with open('test_queries/fmf_actors.json', 'w') as outfile:
 #     outfile.write(people)
 
@@ -77,8 +80,12 @@ api = imdb_game_api("key.txt")
 # with open('test_queries/games_player2.json', 'w') as outfile:
 #     outfile.write(games)
 
-endpoints = api.get_game_endpoints(0,0,0)
-endpoint_actors = [api.get_person_by_id(id) for id in endpoints]
-for actor in endpoint_actors:
-    print(actor)
+endpoints = api.get_game_endpoints(10, 53453)
+print(endpoints)
+# print("Path length:")
+# print(api.calculate_optimal_score(endpoints[0], endpoints[1]))
+
+# endpoint_actors = [api.get_person_by_id(id) for id in endpoints]
+# for actor in endpoint_actors:
+#     print(actor)
 api.destructor()

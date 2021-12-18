@@ -21,10 +21,6 @@ class helper():
     # Given data, type of data, and a schema, return a dictionary of info
     @staticmethod
     def __create_dict_from_schema(data=(), data_type=str, schema=[str]) -> dict:
-        print(data_type)
-        print(data)
-        print(schema)
-        print()
         return_dict = {"Type": data_type}
         for indx, value in enumerate(data):
             return_dict[schema[indx]] = value
@@ -98,3 +94,8 @@ class helper():
     def create_game_json(gm=()) -> str:
         gm = helper.unpickle_game_data(gm)
         return helper.__create_json_from_schema(gm, "Game", helper.__gm_schema)
+
+    @staticmethod
+    def get_ids_from_nodes(nodes=[]) -> list:
+        ids = [node._properties['id'] for node in nodes]
+        return ids

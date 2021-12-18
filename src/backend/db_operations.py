@@ -1,4 +1,5 @@
 import mysql.connector
+from neo4j import GraphDatabase
 import pickle
 
 class db_operations():
@@ -14,6 +15,8 @@ class db_operations():
     #     print("connection made...")
 
     def __init__(self, key_path):  # constructor with connection path to db
+        self.driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "Password123"))
+
         info = self.parse_key(key_path)
         self.connection = mysql.connector.connect(
             host=info["host"],
@@ -32,6 +35,40 @@ class db_operations():
             info["database"] = f.readline()
         return info
 
+    @staticmethod
+    def run_depth_query(tx, startNodeID=int, depth=int):
+        result = tx.run('''
+            MATCH (n)
+            WHERE n.id = $startNodeID
+            WITH $depth AS maxLevel,n
+            CALL apoc.path.spanningTree(n, {relationshipFilter: "COSTARS_WITH", minLevel:1, maxLevel:maxLevel, bfs:TRUE}) 
+            YIELD path
+            WITH COLLECT(path) AS paths,n,maxLevel
+            WITH [p IN paths WHERE length(p) = maxLevel] AS maxPaths,n
+            WITH [p IN maxPaths | LAST(NODES(p))] as lastNodes,n
+            RETURN lastNodes
+        ''', startNodeID=startNodeID, depth=depth)
+        return result.single()[0]
+
+    def run_shortest_path_query(tx, startNodeID=int, endNodeID=int):
+            result = tx.run('''
+                MATCH (p1:Person),(p2:Person)
+                WHERE p1.id = $startNodeID AND p2.id = $endNodeID
+                WITH shortestPath((p1)-[:COSTARS_WITH*]-(p2)) as p
+                RETURN length(p)
+            ''', startNodeID=startNodeID, endNodeID=endNodeID)
+            return result.single()[0]
+
+    def get_nodes_at_depth(self, startNodeID, depth):
+        with self.driver.session(database="costars") as session:
+            result = session.read_transaction(db_operations.run_depth_query, startNodeID, depth)
+            return result
+
+    def calculate_optimal_score(self, startNodeID, endNodeID):
+        with self.driver.session(database="costars") as session:
+            result = session.read_transaction(db_operations.run_shortest_path_query, startNodeID, endNodeID)
+            return result
+
     # function to return a single value from table
     def single_record(self, query):
         self.cursor.execute(query)
@@ -44,24 +81,12 @@ class db_operations():
             results.append(result.fetchall())
         return results
 
-    def insert_game(self, game_tuple):
-        query = '''
-        INSERT INTO Game (Player, Starter, Ender, OptimalScore, Score, GamePath)
-        VALUES (%s,%s,%s,%s,%s,%s);
-        '''
-        # dictionary = {'pID':game_tuple[0], 'sID':game_tuple[1], 'eID':game_tuple[2]}
-        self.cursor.execute(query, game_tuple)
-
-    def get_game(self, id):
-        query = '''
-        SELECT * FROM Game'''
-
     def commit_transation(self):
         self.connection.commit()
 
     def rollback_transaction(self):
         self.connection.rollback()
 
-
     def destructor(self):
         self.connection.close()
+        self.driver.close()
