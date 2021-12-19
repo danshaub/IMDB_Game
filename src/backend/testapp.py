@@ -76,6 +76,10 @@ api = imdb_game_api("key.txt")
 # with open('test_queries/game.json', 'w') as outfile:
 #     outfile.write(game)
 
+game = api.get_info_by_role("Mr. Fox")
+with open('test_queries/role.json', 'w') as outfile:
+    outfile.write(game)
+
 # games = api.get_games_by_player(2)
 # with open('test_queries/games_player2.json', 'w') as outfile:
 #     outfile.write(games)

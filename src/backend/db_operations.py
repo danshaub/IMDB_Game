@@ -4,16 +4,6 @@ from neo4j.exceptions import ServiceUnavailable
 import pickle
 
 class db_operations():
-    # initialize connection and cursor
-    # def __init__(self, host, user, password, database):
-    #     self.connection = mysql.connector.connect(
-    #         host=host,
-    #         user=user,
-    #         password=password,
-    #         database=database
-    #     )
-    #     self.cursor = self.connection.cursor()
-    #     print("connection made...")
 
     def __init__(self, key_path):  # constructor with connection path to db
 

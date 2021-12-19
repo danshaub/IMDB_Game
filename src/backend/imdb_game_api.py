@@ -87,6 +87,12 @@ class imdb_game_api:
         result_json = helper.create_json_list([result_dicts], ["People"])
         return result_json
 
+    def get_info_by_role(self, characterName):
+        result = self.db_ops.call_proc('info_by_role', (characterName,))
+        result_dicts = [helper.create_role_info_dict(i) for i in result[0]]
+        result_json = helper.create_json_list([result_dicts], ["RoleInfo"])
+        return result_json
+
 ## Game Functions ##
 
     # Generates two random endpoints exactly numSteps costars away from

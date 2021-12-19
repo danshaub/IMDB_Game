@@ -8,6 +8,7 @@ class helper():
     __gm_schema = ["ID", "Player", "Starter", "Ender", "OptimalScore", "Score", "GamePath"]
     __pr_search_schema = ["ID", "ScreenName", "MovieTitle", "ReleaseYear", "RoleInMovie"]
     __mv_search_schema = ["ID", "Title", "ReleaseYear"]
+    __role_schema = ["Movie", "Actor"]
 
     # Given Lists of dictionaries and names of those lists
     # returns a json string with all lists included and named as separate attributes
@@ -79,6 +80,14 @@ class helper():
     @staticmethod
     def create_mv_search_json(mv=()) -> str:
         return helper.__create_json_from_schema(mv, "Search Result Movie", helper.__mv_search_schema)
+
+    @staticmethod
+    def create_role_info_dict(mp=()) -> dict:
+        return helper.__create_dict_from_schema(mp, "Role", helper.__role_schema)
+
+    @staticmethod
+    def create_role_info_json(mp=()) -> str:
+       return helper.__create_json_from_schema(mp, "Role", helper.__role_schema)
 
     @staticmethod
     def unpickle_game_data(gm=()) -> tuple:
