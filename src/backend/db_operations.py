@@ -43,8 +43,8 @@ class db_operations():
         return info
 
     @staticmethod
-    def run_depth_query(tx, startNodeID=int, depth=int):
-        result = tx.run('''
+    def run_depth_query(tx, startNodeID, depth):
+        query = '''
             MATCH (n)
             WHERE n.id = $startNodeID
             WITH $depth AS maxLevel,n
@@ -54,8 +54,15 @@ class db_operations():
             WITH [p IN paths WHERE length(p) = maxLevel] AS maxPaths,n
             WITH [p IN maxPaths | LAST(NODES(p))] as lastNodes,n
             RETURN lastNodes
-        ''', startNodeID=startNodeID, depth=depth)
-        return result.single()[0]
+        ''' 
+        result = tx.run(query, startNodeID=startNodeID, depth=depth)
+        
+        try:
+            return result.single()[0]
+        except ServiceUnavailable as exception:
+            print("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
 
     def run_shortest_path_query(tx, startNodeID=int, endNodeID=int):
         query = '''
@@ -63,10 +70,10 @@ class db_operations():
                 WHERE p1.id = $startNodeID AND p2.id = $endNodeID
                 WITH shortestPath((p1)-[:COSTARS_WITH*]-(p2)) as p
                 RETURN length(p)
-            '''
-
+        '''
+        result = tx.run(query, startNodeID=startNodeID, endNodeID=endNodeID)
+        
         try:
-            result = tx.run(query, startNodeID=startNodeID, endNodeID=endNodeID)
             return result.single()[0]
         except ServiceUnavailable as exception:
             print("{query} raised an error: \n {exception}".format(
@@ -75,12 +82,12 @@ class db_operations():
                 
 
     def get_nodes_at_depth(self, startNodeID, depth):
-        with self.driver.session(database="costars") as session:
+        with self.driver.session() as session:
             result = session.read_transaction(db_operations.run_depth_query, startNodeID, depth)
             return result
 
     def calculate_optimal_score(self, startNodeID, endNodeID):
-        with self.driver.session(database="costars") as session:
+        with self.driver.session() as session:
             result = session.read_transaction(db_operations.run_shortest_path_query, startNodeID, endNodeID)
             return result
 
