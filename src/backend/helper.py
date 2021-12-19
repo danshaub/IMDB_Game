@@ -6,6 +6,7 @@ class helper():
     __mv_schema = ["ID", "Title", "ReleaseYear", "Genre", "Duration", "Country", "Rating", "Votes", "Category", "Role"]
     __ct_schema = ["ID", "Movie", "Importance", "MoviePeople", "Category", "CharacterPlayed"]
     __gm_schema = ["ID", "Player", "Starter", "Ender", "OptimalScore", "Score", "GamePath"]
+    __pl_shcema = ["ID", "UserName", "IsAdmin"]
     __pr_search_schema = ["ID", "ScreenName", "MovieTitle", "ReleaseYear", "RoleInMovie"]
     __mv_search_schema = ["ID", "Title", "ReleaseYear"]
     __role_schema = ["Movie", "Actor"]
@@ -88,6 +89,14 @@ class helper():
     @staticmethod
     def create_role_info_json(mp=()) -> str:
        return helper.__create_json_from_schema(mp, "Role", helper.__role_schema)
+
+    @staticmethod
+    def create_player_dict(mp=()) -> dict:
+        return helper.__create_dict_from_schema(mp, "Player", helper.__pl_shcema)
+
+    @staticmethod
+    def create_player_json(mp=()) -> str:
+       return helper.__create_json_from_schema(mp, "Player", helper.__pl_shcema)
 
     @staticmethod
     def unpickle_game_data(gm=()) -> tuple:

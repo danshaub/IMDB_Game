@@ -87,10 +87,17 @@ class imdb_game_api:
         result_json = helper.create_json_list([result_dicts], ["People"])
         return result_json
 
+    # given the name of a character, returns the actor and movie associated
     def get_info_by_role(self, characterName):
+        # proc info_by_role makes use of a subquery and 
         result = self.db_ops.call_proc('info_by_role', (characterName,))
         result_dicts = [helper.create_role_info_dict(i) for i in result[0]]
         result_json = helper.create_json_list([result_dicts], ["RoleInfo"])
+        return result_json
+
+    def get_player_by_id(self, id):
+        result = self.db_ops.call_proc('get_player_by_id', (id,))
+        result_json = helper.create_player_json(result[0][0])
         return result_json
 
 ## Game Functions ##
@@ -101,6 +108,7 @@ class imdb_game_api:
         if gameSeed != 0:
             random.seed(gameSeed)
         
+        ## get_top_pop_movies uses a View ##
         # Finds random movie within top 1000 most popular
         movies = self.db_ops.call_proc('get_top_pop_movies')
         movies = [helper.create_movie_dict(i) for i in movies[0]]
@@ -222,7 +230,7 @@ class imdb_game_api:
     # delete person
     def delete_person(self, ID):
         self.db_ops.call_proc(
-            'delete_player', (ID,))
+            'delete_person', (ID,))
 
     # delete movie
     def delete_movie(self, ID):
