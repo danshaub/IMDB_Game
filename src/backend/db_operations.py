@@ -4,7 +4,7 @@ from neo4j.exceptions import ServiceUnavailable
 import pickle
 
 class db_operations():
-
+    # Initilaize db_ops object. Needs reference to key file
     def __init__(self, key_path):  # constructor with connection path to db
 
         info = self.parse_key(key_path)
@@ -20,6 +20,7 @@ class db_operations():
     
         print("connection made..")
 
+    # parses key file and returns a dictionary
     def parse_key(self, key_path):
         info = {}
         with open(key_path, 'r') as f:
@@ -32,6 +33,7 @@ class db_operations():
             info["n_password"] = f.readline().strip()
         return info
 
+    # Runs Neo4j query that finds costars exactly at depth
     @staticmethod
     def run_depth_query(tx, startNodeID, depth):
         query = '''
@@ -54,6 +56,7 @@ class db_operations():
                 query=query, exception=exception))
             raise
 
+    # Neo4j function that calculates the number of costar steps between two actors
     def run_shortest_path_query(tx, startNodeID=int, endNodeID=int):
         query = '''
                 MATCH (p1:Person),(p2:Person)
@@ -70,12 +73,13 @@ class db_operations():
                 query=query, exception=exception))
             raise
                 
-
+    # Calls depth query
     def get_nodes_at_depth(self, startNodeID, depth):
         with self.driver.session() as session:
             result = session.read_transaction(db_operations.run_depth_query, startNodeID, depth)
             return result
 
+    # Calls shortest path query
     def calculate_optimal_score(self, startNodeID, endNodeID):
         with self.driver.session() as session:
             result = session.read_transaction(db_operations.run_shortest_path_query, startNodeID, endNodeID)
@@ -86,6 +90,7 @@ class db_operations():
         self.cursor.execute(query)
         return self.cursor.fetchone()
 
+    # Calls a SQL procedure with given arguments
     def call_proc(self, proc_name, args=()):
         self.cursor.callproc(proc_name, args)
         results = []
@@ -93,9 +98,11 @@ class db_operations():
             results.append(result.fetchall())
         return results
 
+    # Finalized a transaction
     def commit_transation(self):
         self.connection.commit()
 
+    # Rollsback a transaction
     def rollback_transaction(self):
         self.connection.rollback()
 

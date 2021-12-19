@@ -34,6 +34,8 @@ class helper():
     def __create_json_from_schema(data=(), data_type=str, schema=[str]) -> str:
         return json.dumps(helper.__create_dict_from_schema(data, data_type, schema), indent=2)
 
+    ## Following functions turn SQL query results into dictionaries and JSON strings ##
+
     @staticmethod
     def create_person_dict(mp=()) -> dict:
         return helper.__create_dict_from_schema(mp, "Person", helper.__pr_schema)
@@ -99,11 +101,6 @@ class helper():
        return helper.__create_json_from_schema(mp, "Player", helper.__pl_shcema)
 
     @staticmethod
-    def unpickle_game_data(gm=()) -> tuple:
-        lst = list(gm[0:-1]) + [pickle.loads(gm[-1])]
-        return tuple(lst)
-    
-    @staticmethod
     def create_game_dict(gm=()) -> dict:
         gm = helper.unpickle_game_data(gm)
         return helper.__create_dict_from_schema(gm, "Game", helper.__gm_schema)
@@ -113,6 +110,13 @@ class helper():
         gm = helper.unpickle_game_data(gm)
         return helper.__create_json_from_schema(gm, "Game", helper.__gm_schema)
 
+    # Serializes a game integer array
+    @staticmethod
+    def unpickle_game_data(gm=()) -> tuple:
+        lst = list(gm[0:-1]) + [pickle.loads(gm[-1])]
+        return tuple(lst)
+
+    # Returns a list of ids from Neo4j nodes
     @staticmethod
     def get_ids_from_nodes(nodes=[]) -> list:
         ids = [node._properties['id'] for node in nodes]

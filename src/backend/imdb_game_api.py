@@ -99,6 +99,12 @@ class imdb_game_api:
         result = self.db_ops.call_proc('get_player_by_id', (id,))
         result_json = helper.create_player_json(result[0][0])
         return result_json
+        
+    # Returns the number of movies a person worked on
+    def get_movie_count_by_id(self, id):
+        result = self.db_ops.call_proc('count_movies_by_person', (id,))
+        return result[0][0][0]
+
 
 ## Game Functions ##
 
@@ -139,18 +145,21 @@ class imdb_game_api:
     def calculate_optimal_score(self, startActor=int, endActor=int):
         return self.db_ops.calculate_optimal_score(startActor, endActor)
 
-    # Given 
+    # Given an actor, return the movies they played in
     def get_movies_by_actor(self, id):
         result = self.db_ops.call_proc('get_movies_by_actor', (id,))
         result_dicts = [helper.create_movie_dict(i) for i in result[0]]
         result_json = helper.create_json_list([result_dicts], ["Movies"])
         return result_json
 
+    # given a movie, return all actors who played in it
     def get_actors_by_movie(self, id):
         result = self.db_ops.call_proc('get_actors_by_movie', (id,))
         result_dicts = [helper.create_person_dict(i) for i in result[0]]
         result_json = helper.create_json_list([result_dicts], ["People"])
         return result_json
+
+
 
 ## Player Stats ##
 
