@@ -166,7 +166,7 @@ class imdb_game_api:
     # add person
     def add_person(self, StageName, Height, Birthday, BirthPlace, Popularity):
         self.db_ops.call_proc(
-            'add_player', (StageName, Height, Birthday, BirthPlace, Popularity))
+            'add_person', (StageName, Height, Birthday, BirthPlace, Popularity))
     # add movie
     def add_movie(self, Title, ReleaseYear, Genre, Duration, Country, Rating, Votes):
         self.db_ops.call_proc('add_movie', Title, ReleaseYear,

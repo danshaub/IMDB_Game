@@ -1,5 +1,6 @@
 import mysql.connector
 from neo4j import GraphDatabase
+from neo4j.exceptions import ServiceUnavailable
 import pickle
 
 class db_operations():
@@ -15,7 +16,6 @@ class db_operations():
     #     print("connection made...")
 
     def __init__(self, key_path):  # constructor with connection path to db
-        self.driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "Password123"))
 
         info = self.parse_key(key_path)
         self.connection = mysql.connector.connect(
@@ -24,15 +24,22 @@ class db_operations():
             password=info["password"],
             database=info["database"])
         self.cursor = self.connection.cursor()
+        
+        self.driver = GraphDatabase.driver(
+            info['n_uri'], auth=(info['n_user'], info['n_password']))
+    
         print("connection made..")
 
     def parse_key(self, key_path):
         info = {}
         with open(key_path, 'r') as f:
-            info["host"] = f.readline()[0:-1]
-            info["user"] = f.readline()[0:-1]
-            info["password"] = f.readline()[0:-1]
-            info["database"] = f.readline()
+            info["host"] = f.readline().strip()
+            info["user"] = f.readline().strip()
+            info["password"] = f.readline().strip()
+            info["database"] = f.readline().strip()
+            info["n_uri"] = f.readline().strip()
+            info["n_user"] = f.readline().strip()
+            info["n_password"] = f.readline().strip()
         return info
 
     @staticmethod
@@ -51,13 +58,21 @@ class db_operations():
         return result.single()[0]
 
     def run_shortest_path_query(tx, startNodeID=int, endNodeID=int):
-            result = tx.run('''
+        query = '''
                 MATCH (p1:Person),(p2:Person)
                 WHERE p1.id = $startNodeID AND p2.id = $endNodeID
                 WITH shortestPath((p1)-[:COSTARS_WITH*]-(p2)) as p
                 RETURN length(p)
-            ''', startNodeID=startNodeID, endNodeID=endNodeID)
+            '''
+
+        try:
+            result = tx.run(query, startNodeID=startNodeID, endNodeID=endNodeID)
             return result.single()[0]
+        except ServiceUnavailable as exception:
+            print("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+                
 
     def get_nodes_at_depth(self, startNodeID, depth):
         with self.driver.session(database="costars") as session:
